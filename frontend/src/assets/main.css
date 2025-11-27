@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;          /* white background */
+    --foreground: 222.2 84% 4.9%;     /* dark text */
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* New primary / secondary / accent colors */
+    --primary: 16 100% 66%;           /* coral (#FF7F50) */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 200 100% 90%;        /* super light blue (#CCF2FF) */
+    --secondary-foreground: 222.2 84% 4.9%;
+
+    --accent: 210 100% 56%;           /* blue (#007BFF) */
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+
+    --radius: 0.5rem;
+  }
+}
+
+/* Custom theme colors */
+.bg-primary {
+  @apply bg-purple-500; /* Your wisteria theme color */
+}
+
+.text-primary {
+  @apply text-purple-500;
+}
+
+/* Custom theme colors */
+.bg-primary {
+  @apply bg-[hsl(var(--primary))];
+}
+
+.text-primary {
+  @apply text-[hsl(var(--primary))];
+}
+
+.bg-secondary {
+  @apply bg-[hsl(var(--secondary))];
+}
+
+.text-secondary {
+  @apply text-[hsl(var(--secondary))];
+}
+
+.bg-accent {
+  @apply bg-[hsl(var(--accent))];
+}
+
+.text-accent {
+  @apply text-[hsl(var(--accent))];
+}
+
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Fade transition for testimonials */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
