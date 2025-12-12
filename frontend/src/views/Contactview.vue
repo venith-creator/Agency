@@ -124,7 +124,9 @@
             </h2>
 
             <!-- FORM FIELDS -->
-            <form class="mt-8 space-y-6">
+            <form 
+            @submit.prevent="submitForm"
+            class="mt-8 space-y-6">
 
                 <!-- FULL NAME -->
                 <div>
@@ -132,9 +134,13 @@
                     Full Name <span class="text-red-500">*</span>
                 </label>
                 <input 
+                    v-model="form.name"
                     type="text"
+                     id="name"
                     placeholder="John Smith"
                     class="w-full mt-2 p-3 rounded-lg border border-gray-300 bg-[#FFF8E6] placeholder-gray-500"
+                    required
+                    :disabled="submitting"
                 />
                 </div>
 
@@ -147,21 +153,29 @@
                     Email Address <span class="text-red-500">*</span>
                     </label>
                     <input 
+                    v-model="form.email"
                     type="email"
                     placeholder="John@example.com"
                     class="w-full mt-2 p-3 rounded-lg border border-gray-300 bg-[#FFF8E6] placeholder-gray-500"
+                    required
+                    :disabled="submitting"
                     />
                 </div>
 
                 <!-- PHONE -->
                 <div>
                     <label class="font-semibold text-gray-800">
-                    Phone Number <span class="text-gray-400">(optional)</span>
+                    Phone Number <span class="text-red-500">*</span>
                     </label>
                     <input 
-                    type="text"
-                    placeholder="07933 487253"
+                    v-model="form.whatsapp"
+                    type="tel"
+                    id="whatsapp"
+                    pattern="^\+?[1-9]\d{7,14}$"
+                    placeholder="Include your country code (e.g. +448130000000)"
                     class="w-full mt-2 p-3 rounded-lg border border-gray-300 bg-[#FFF8E6] placeholder-gray-500"
+                    required
+                    :disabled="submitting"
                     />
                 </div>
 
@@ -173,18 +187,46 @@
                     Message <span class="text-red-500">*</span>
                 </label>
                 <textarea 
+                    v-model="form.message"
+                    id="message"
                     rows="5"
                     placeholder="Tell us briefly about your care needs......"
                     class="w-full mt-2 p-3 rounded-lg border border-gray-300 bg-[#FFF8E6] placeholder-gray-500"
+                    required
+                    :disabled="submitting"
                 ></textarea>
                 </div>
 
                 <!-- SEND BUTTON -->
                 <button 
-                type="button"
+                type="submit"
                 class="w-full  bg-blue-600 text-white p-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition"
+                :disabled="submitting"
                 >
-                Send Message
+                <span v-if="!submitting">Send Message</span>
+                <span v-else class="flex items-center gap-2">
+                  <svg
+                    class="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                  Sending...
+                </span>
                 </button>
 
                 <!-- SMALL NOTE -->
@@ -200,3 +242,43 @@
 
     </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useToast } from 'vue-toast-notification'
+import { API_BASE_URL } from '@/config'
+
+const toast = useToast()
+
+const form = ref({
+  name: '',
+  email: '',
+  whatsapp: '',
+  message: ''
+})
+
+const submitting = ref(false)
+
+async function submitForm() {
+  if (submitting.value) return
+  submitting.value = true
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form.value)
+    })
+
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message || 'Something went wrong')
+
+    toast.success('Message sent successfully! ✅')
+    form.value = { name: '', email: '', whatsapp: '', message: '' }
+  } catch (err: any) {
+    toast.error('Failed to send message: ' + err.message)
+  } finally {
+    submitting.value = false
+  }
+}
+</script>
